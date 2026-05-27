@@ -1,20 +1,20 @@
 # /software-design
 
-`/software-design` is a **user-invoked** skill that runs after a PRD has
-been broken into issues and before implementation begins. Its job is to
-turn that backlog into a coherent design — named modules, located seams,
-an explicit testing strategy, and TDD-ready issue bodies — so `/tdd` can
-work one behavior at a time without rediscovering boundaries mid-flight.
+`/software-design` runs after a PRD has been broken into issues and
+before implementation begins. Its job is to turn that backlog into a
+coherent design — named modules, located seams, an explicit testing
+strategy, and TDD-ready issue bodies — so `/tdd` can work one behavior at
+a time without rediscovering boundaries mid-flight.
 
-The skill is **not model-invocable**. Invoke it explicitly with
-`/software-design`. The skill self-checks its prerequisites and exits
-early on work that doesn't need a design pass.
+The skill self-checks its prerequisites and exits early on work that
+doesn't need a design pass. Claude may invoke it directly when the
+backlog looks multi-module, or suggest the user run it.
 
 ---
 
 ## Where this skill sits
 
-The intended manual workflow is:
+The intended workflow is:
 
 1. `/grill-with-docs` — sharpen domain vocabulary against the PRD; update
    `CONTEXT.md` and `docs/adr/`.
@@ -23,10 +23,8 @@ The intended manual workflow is:
    rewrite issue bodies into TDD-ready shape; write a Design Plan.
 4. `/tdd` — implement one behavior at a time via red-green-refactor.
 
-The skill is **not** automatic. The user decides when the backlog is
-multi-module enough to warrant a design pass and invokes the skill at
-that point. If it's invoked when the work is genuinely single-module,
-the skill exits early and points the user at `/tdd` directly.
+If the skill is invoked when the work is genuinely single-module, it
+exits early and points at `/tdd` directly.
 
 ---
 

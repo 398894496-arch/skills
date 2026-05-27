@@ -1,10 +1,10 @@
 ---
 name: software-design
 description: >
-  User-invoked only via /software-design. Do not propose this skill proactively.
-  Designs modules, seams, and a testing strategy for a multi-issue backlog after
-  a PRD exists and /to-issues has published issues, and before /tdd. The user
-  decides when to run it.
+  Designs modules, seams, and a testing strategy for a multi-issue backlog
+  after a PRD exists and /to-issues has published issues, and before /tdd
+  begins implementation. Use when the backlog plausibly spans two or more
+  modules and module/seam choices are still implicit.
 ---
 
 # Software Design
@@ -27,15 +27,16 @@ template.
 
 ## When to Run
 
-You — the user — decide when. This skill is not proposed automatically.
-Invoke it explicitly with `/software-design` after:
+Run after:
 
 - A PRD or epic exists (in conversation, in a file, or as a parent issue).
 - `/to-issues` has published a backlog of issues for that epic.
 - `CONTEXT.md` exists with the domain vocabulary the issues will use.
 
 It is at its sharpest when the backlog plausibly spans **two or more
-modules** and module/seam choices are still implicit.
+modules** and module/seam choices are still implicit. If those conditions
+aren't met, apply the early-exit rule below or suggest the user run the
+missing prerequisite skill.
 
 ---
 
@@ -70,7 +71,7 @@ Before doing anything else, verify the prerequisites:
 4. **Likely multi-module** — read the issue set. If it plausibly spans 2+
    modules, proceed. Otherwise apply the early-exit rule above.
 
-This skill is its own gatekeeper. The user is the trigger.
+This skill is its own gatekeeper.
 
 ---
 
