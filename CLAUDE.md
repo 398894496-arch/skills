@@ -2,13 +2,17 @@ Skills are organized into bucket folders under skills/:
 
     engineering/ — daily code work
 
-Every skill in engineering/must have a reference in the top-level README.md and an entry in .claude-plugin/plugin.json.
+Every skill must be registered in two places:
 
-Each skill entry in the top-level README.md must link the skill name to its SKILL.md.
+- `.claude-plugin/plugin.json` — the array of skill paths.
+- Top-level `README.md` — link the skill name to its `SKILL.md` and give a one-line description.
 
-Each bucket folder has a README.md that lists every skill in the bucket with a one-line description, with the skill name linked to its SKILL.md.
+A bucket's own `README.md` is **not** required by default. Add one only when either: (a) the repo has ≥3 buckets and the top-level README is getting long, or (b) a single bucket holds ≥3 skills and a localized index aids navigation.
 
-## Agent skills
+## Conventions
+
+Cross-cutting rules that multiple skills follow. Not invokable — read by
+skills during their work. See [`CONTEXT.md`](./CONTEXT.md) for vocabulary.
 
 ### Issue tracker
 

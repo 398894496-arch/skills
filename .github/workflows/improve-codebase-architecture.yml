@@ -1,0 +1,73 @@
+name: Improve Codebase Architecture
+
+on:
+  schedule:
+    # 13:00 UTC weekdays = 09:00 ET / 06:00 PT. GitHub may delay scheduled runs under load.
+    - cron: "0 13 * * 1-5"
+  workflow_dispatch:
+
+jobs:
+  improve-codebase-architecture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    concurrency:
+      group: improve-codebase-architecture
+      cancel-in-progress: false
+    permissions:
+      contents: read
+      issues: write
+
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GH_REPO: ${{ github.repository }}
+      LABEL: source:architecture-review
+
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install Claude Code
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Install mattpocock/skills plugin
+        run: |
+          mkdir -p ~/.claude/plugins
+          git clone --depth 1 https://github.com/mattpocock/skills.git ~/.claude/plugins/mattpocock-skills
+
+      - name: Ensure provenance label exists
+        run: |
+          gh label create "$LABEL" \
+            --color "5319E7" \
+            --description "Issues proposed by the automated architecture-review workflow" \
+            >/dev/null 2>&1 || true
+
+      - name: Run /improve-codebase-architecture
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+        run: |
+          set -euo pipefail
+          claude -p \
+            --permission-mode acceptEdits \
+            --allowedTools "Bash(gh:*) Bash(git:*) Read Grep Glob" \
+            --append-system-prompt "$(cat .github/workflows/prompts/improve-codebase-architecture.md)" \
+            "Run the daily architecture-review pass. Follow the instructions in the system prompt." \
+            | tee "$RUNNER_TEMP/agent.log"
+
+      - name: Summarise run
+        if: always()
+        run: |
+          {
+            echo "## Architecture review"
+            echo ""
+            echo '```'
+            tail -n 50 "$RUNNER_TEMP/agent.log" 2>/dev/null || echo "(no log produced)"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
