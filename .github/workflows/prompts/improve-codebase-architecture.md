@@ -16,19 +16,29 @@ questions — make the call yourself.
    deepening opportunity in this codebase. Read `CONTEXT.md` and any ADRs
    under `docs/adr/` first if they exist; treat ADRs as binding.
 
-3. Pick **one** top candidate that is not a loose duplicate of any prior
+3. **Research before proposing.** The skills in this repo
+   (`frontend-design`, `software-design`) encode evolving best practice.
+   Before settling on a candidate, use `WebSearch` / `WebFetch` to check
+   current thinking on the area you're proposing to deepen — design
+   tokens, component patterns, module/seam boundaries, testing strategy,
+   accessibility standards, etc. Cite 1–3 sources in the issue body so a
+   future reader can see the basis for the proposal. Prefer primary
+   sources (specs, framework docs, well-known authors) over listicles.
+
+4. Pick **one** top candidate that is not a loose duplicate of any prior
    proposal.
 
-4. File it as a GitHub issue:
+5. File it as a GitHub issue. Include a "Sources" section listing the
+   research links you used:
 
    ```
    gh issue create \
      --title "<concise title>" \
      --label source:architecture-review \
-     --body "<full body>"
+     --body "<full body, with a Sources section at the end>"
    ```
 
-5. If every reasonable candidate is already covered by a prior
+6. If every reasonable candidate is already covered by a prior
    `source:architecture-review` proposal, do **not** file an issue. Print
    `SKIPPED: <one-line reason>` and stop.
 

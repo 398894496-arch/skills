@@ -61,7 +61,7 @@ jobs:
           set -euo pipefail
           claude -p \
             --permission-mode acceptEdits \
-            --allowedTools "Bash(gh:*) Bash(git:*) Read Grep Glob" \
+            --allowedTools "Bash(gh:*) Bash(git:*) Read Grep Glob WebSearch WebFetch" \
             --append-system-prompt "$(cat .github/workflows/prompts/improve-codebase-architecture.md)" \
             "Run the daily architecture-review pass. Follow the instructions in the system prompt." \
             | tee "$RUNNER_TEMP/agent.log"
