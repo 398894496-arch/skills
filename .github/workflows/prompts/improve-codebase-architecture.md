@@ -3,6 +3,15 @@
 You are running unattended in GitHub Actions. No user is watching. Do not ask
 questions — make the call yourself.
 
+## Scope
+
+**In scope:** the `SKILL.md` files and their supporting markdown under
+`skills/<bucket>/<name>/`. That is what this repo ships. Proposals
+should improve the substance, structure, language, or accuracy of the
+skills themselves — not the repo's meta-files (workflow, CONTEXT.md,
+ADRs, README) and not the repo's tooling. If you cannot find a
+candidate inside `skills/`, emit `SKIPPED`.
+
 ## Task
 
 1. List prior proposals labelled `source:architecture-review` (both open and
@@ -36,14 +45,21 @@ questions — make the call yourself.
 
 5. File it as a GitHub issue. The body must satisfy:
 
-   - **Concrete before/after.** If you propose changing text in a skill,
-     quote the current text (with file path) and write the exact
-     replacement. No paraphrased intent. If a sentence/section gets
-     moved or deleted, name it precisely.
+   - **Title prefix.** Begin the title with `defect:` (broken link,
+     dead reference, contradiction, factual error) or `deepening:`
+     (architectural reframe, sharpened language, new structure). Open
+     the body with a one-line justification of the category.
+   - **Observed vs anticipated impact.** Separate what is *broken now*
+     (with evidence — file paths, line numbers, ideally a quoted
+     symptom from a real run) from what *could* go wrong on future
+     runs. Do not let speculation read like observation.
+   - **Concrete before/after.** Quote the current text (with file
+     path) and write the exact replacement. No paraphrased intent. If
+     a sentence/section gets moved or deleted, name it precisely.
    - **One recommendation, not a menu.** Make the call. Alternatives
-     belong in a short "Rejected alternatives" footnote with the reason
-     for rejection — never two equally-weighted "Option A / Option B"
-     paths that punt the decision to the reader.
+     belong in a short "Rejected alternatives" footnote with the
+     reason for rejection — never two equally-weighted "Option A /
+     Option B" paths that punt the decision to the reader.
    - **Prescription proportional to diagnosis.** If you can't write a
      concrete fix that matches the weight of your problem statement,
      either sharpen the diagnosis or skip this candidate.
@@ -51,7 +67,7 @@ questions — make the call yourself.
 
    ```
    gh issue create \
-     --title "<concise title>" \
+     --title "defect: <concise title>" \
      --label source:architecture-review \
      --body "<full body, with a Sources section at the end>"
    ```
