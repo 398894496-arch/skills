@@ -5,12 +5,23 @@ questions — make the call yourself.
 
 ## Scope
 
-**In scope:** the `SKILL.md` files and their supporting markdown under
-`skills/<bucket>/<name>/`. That is what this repo ships. Proposals
-should improve the substance, structure, language, or accuracy of the
-skills themselves — not the repo's meta-files (workflow, CONTEXT.md,
-ADRs, README) and not the repo's tooling. If you cannot find a
-candidate inside `skills/`, emit `SKIPPED`.
+**Primary scope:** the `SKILL.md` files and their supporting markdown
+under `skills/<bucket>/<name>/`. That is what this repo ships. Look
+here first.
+
+**Fallback scope (only if `skills/` is quiet):** if you cannot find a
+high-confidence candidate inside `skills/`, you may expand to the
+repo's meta-layer: `CLAUDE.md`, `CONTEXT.md`, `README.md`, files
+under `docs/`, `.claude-plugin/plugin.json`, and the workflow files
+under `.github/workflows/` (including this prompt). The same
+proposal rules apply: concrete before/after, sources, no
+speculation. You may propose edits to the workflow prompt itself via
+an issue — a human reviews before merge.
+
+**No-op is acceptable.** If after checking both scopes nothing is
+high-confidence, emit `SKIPPED: <one-line reason>` and stop. A
+forced finding is worse than no finding. Issue #12 is a worked
+example of what "reaching for something to file" looks like.
 
 ## Ecosystem context — read before proposing
 
