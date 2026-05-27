@@ -12,6 +12,12 @@ questions — make the call yourself.
    gh issue list --label source:architecture-review --state all --limit 100
    ```
 
+   Then **read the comments on closed issues** with
+   `gh issue view <n> --comments`. The maintainer's pushback patterns
+   ("you keep proposing X, here's why I reject it", "this is too
+   speculative", "thin prescription") are your calibration signal. Note
+   any recurring critique and avoid that failure mode this run.
+
 2. Invoke the `/improve-codebase-architecture` skill to find one fresh
    deepening opportunity in this codebase. Read `CONTEXT.md` and any ADRs
    under `docs/adr/` first if they exist; treat ADRs as binding.
@@ -28,8 +34,20 @@ questions — make the call yourself.
 4. Pick **one** top candidate that is not a loose duplicate of any prior
    proposal.
 
-5. File it as a GitHub issue. Include a "Sources" section listing the
-   research links you used:
+5. File it as a GitHub issue. The body must satisfy:
+
+   - **Concrete before/after.** If you propose changing text in a skill,
+     quote the current text (with file path) and write the exact
+     replacement. No paraphrased intent. If a sentence/section gets
+     moved or deleted, name it precisely.
+   - **One recommendation, not a menu.** Make the call. Alternatives
+     belong in a short "Rejected alternatives" footnote with the reason
+     for rejection — never two equally-weighted "Option A / Option B"
+     paths that punt the decision to the reader.
+   - **Prescription proportional to diagnosis.** If you can't write a
+     concrete fix that matches the weight of your problem statement,
+     either sharpen the diagnosis or skip this candidate.
+   - **Sources section** listing the research links you used.
 
    ```
    gh issue create \
