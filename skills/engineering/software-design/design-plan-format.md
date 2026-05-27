@@ -88,7 +88,8 @@ Rules that must hold regardless of implementation.
 ## Issue Index
 
 One row per rewritten issue. Bodies live in the tracker; this is a
-pointer table only.
+pointer table only. Frontend-flavored issue bodies additionally carry the
+`**Frontend design**` routing block (see [issue-shape.md](issue-shape.md)).
 
 | Issue | Module | One-line description |
 |---|---|---|

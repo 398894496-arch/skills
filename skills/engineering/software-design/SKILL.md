@@ -14,8 +14,10 @@ modules, located seams, an explicit testing strategy, and TDD-ready issue
 bodies that `/tdd` can implement one behavior at a time.
 
 This skill thinks in **modules, seams, and adapters**. It is sharpest for
-backend services and code with real I/O boundaries. Small CLIs, pure data
-pipelines, and UI component trees usually hit the early-exit instead.
+backend services and code with real I/O boundaries. Small CLIs and pure
+data pipelines usually hit the early-exit instead. UI component trees
+route to `/frontend-design` — this skill stamps the routing block onto
+frontend-flavored issues and hands off; it does not design components.
 
 See [modules-and-seams.md](modules-and-seams.md) for module and seam
 vocabulary, [testability.md](testability.md) for designing interfaces tests
@@ -50,9 +52,15 @@ The skill exits early if any of these is true:
 - The work is exploratory or throwaway and the boundaries are intentionally
   disposable.
 
-Early-exit behavior: post a one-line comment on each affected issue —
-`design-skipped: single-module change` — and tell the user to run `/tdd`
-directly.
+Early-exit behavior has two paths:
+
+- **Backend single-module** — post `design-skipped: single-module change`
+  on each affected issue and tell the user to run `/tdd` directly.
+- **UI-only** — post `routed-to: /frontend-design` on each affected
+  issue and tell the user to run `/frontend-design` next, then `/tdd`.
+
+Even on early-exit, the stamping pass below still runs for every
+frontend-flavored issue.
 
 ---
 
@@ -89,7 +97,25 @@ Read, in order:
 Do not begin design until you have read the glossary. Use its terms for
 every module name, interface, and rewritten issue.
 
-### 2. Cluster issues by domain concept
+### 2. Stamp frontend-flavored issues with the routing block
+
+Before any module/seam work, scan every open issue against the
+two-of-three frontend detection rule in
+[issue-shape.md](issue-shape.md). For each frontend-flavored issue,
+stamp the `**Frontend design**` routing block into the body — even if
+the backlog is small enough that the rest of the skill will early-exit,
+and even if only one issue qualifies. Uniformity beats optimisation.
+
+The four field values are written mechanically (Stack from manifest,
+Intent paraphrasing the Behavior line, Aesthetic direction is always
+the literal `see docs/design/direction.md`, Token authority is the
+recorded path or the placeholder). Do not interpret the pointers. Do
+not open `docs/design/direction.md`. Do not ask the user about
+typography, color, or motion — those belong to `/frontend-design`.
+
+Backend-only issues get no stamp; the block is omitted entirely.
+
+### 3. Cluster issues by domain concept
 
 Group issues by the concept they touch. A cluster is a coherent set of
 responsibilities that changes for the same reasons.
@@ -102,7 +128,7 @@ Ask:
 
 Label each cluster with a domain noun from `CONTEXT.md`.
 
-### 3. Propose modules and seams
+### 4. Propose modules and seams
 
 For each cluster, propose one or more modules. A module is anything with an
 interface and an implementation. A seam is where that interface lives.
@@ -120,7 +146,7 @@ For each module, capture:
 - **Depends on** — other modules or seams it may call
 - **Must not depend on** — e.g., transport layer, persistence
 
-### 4. Confirm with user
+### 5. Confirm with user
 
 Render the module map as a short summary (not a wall of text). Ask:
 
@@ -128,9 +154,9 @@ Render the module map as a short summary (not a wall of text). Ask:
 - Are there missing modules or collapsed responsibilities?
 - Do the seam locations match where change is expected?
 
-Iterate. Do not proceed to step 5 without approval.
+Iterate. Do not proceed to step 6 without approval.
 
-### 5. Define the testing strategy
+### 6. Define the testing strategy
 
 For each module, decide:
 
@@ -141,7 +167,7 @@ For each module, decide:
 Use [testability.md](testability.md) to shape interfaces for test clarity.
 Use [modules-and-seams.md](modules-and-seams.md) to decide where fakes go.
 
-### 6. Surface durable items for extraction
+### 7. Surface durable items for extraction
 
 As the design session surfaces new domain terms or hard trade-offs, **do
 not write them yourself**. Surface them and defer to the responsible skill:
@@ -154,7 +180,7 @@ not write them yourself**. Surface them and defer to the responsible skill:
 `CONTEXT.md` and `docs/adr/` are owned by `/grill-with-docs`. This skill
 points at them; it does not extend them.
 
-### 7. Rewrite issue bodies into the TDD-ready format
+### 8. Rewrite issue bodies into the TDD-ready format
 
 For each issue, rewrite the body using the format in
 [issue-shape.md](issue-shape.md):
@@ -167,7 +193,7 @@ For each issue, rewrite the body using the format in
 Split any issue that mixes modules. Each rewritten issue is one observable
 behavior.
 
-### 8. Propose all mutations as a single batch
+### 9. Propose all mutations as a single batch
 
 Before writing anything to the tracker or to disk, render the full set of
 changes in conversation:
@@ -181,7 +207,7 @@ filesystem.
 
 The skill never mutates external state without one batch approval.
 
-### 9. Write the Design Plan
+### 10. Write the Design Plan
 
 Create `docs/design/<feature-name>.md` using
 [design-plan-format.md](design-plan-format.md). The plan records modules,
@@ -258,3 +284,9 @@ the need and defer. `/grill-with-docs` owns those files.
 
 **Do not mutate the tracker or disk per-issue.** One batch preview, one
 approval, one pass.
+
+**Do not design components, pages, or visual systems in this skill.**
+Frontend-flavored issues get the `**Frontend design**` routing block
+stamped onto their bodies and route to `/frontend-design`. This skill
+never speaks of directions, tokens, typography, color, or motion —
+those belong to `/frontend-design`.

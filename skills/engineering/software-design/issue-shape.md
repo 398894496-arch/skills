@@ -39,6 +39,13 @@ Each rewritten issue body contains, in order:
 - Given <different precondition>, when <action>, then <different outcome>
 - ...
 
+**Frontend design** (invoke `/frontend-design` before `/tdd`):
+- Stack: <e.g. Next.js 15 + Tailwind v4>
+- Intent: <one-line user-facing intent>
+- Aesthetic direction: see docs/design/direction.md
+- Token authority: <path recorded in docs/design/direction.md>
+- Review: required           ← only when AC explicitly mention a11y / contrast / design audit
+
 **TDD notes**:
 - Entry point: <public function / command / endpoint>
 - Test first: <most critical behavior>
@@ -47,8 +54,59 @@ Each rewritten issue body contains, in order:
 - Must NOT test: <internal details to avoid coupling>
 ```
 
+The `**Frontend design**` block is only present on **frontend-flavored
+issues** (see detection rule below). For backend-only issues the block
+is omitted entirely.
+
 The body replaces (does not extend) the raw `/to-issues` content. The
 issue title can stay; the body is rewritten.
+
+---
+
+## Frontend-Flavored Detection (Two-of-Three Trigger)
+
+Evaluate each issue against three signals. An issue is **frontend-flavored**
+— and gets the `**Frontend design**` stamp — when **two of the three** are
+true:
+
+1. **Output surface is visible** — the issue describes something a user
+   sees: a page, screen, component, modal, form, chart, theme, or layout.
+   Keyword smell: *renders, displays, shows, page, screen, component,
+   modal, form, button, layout, theme, responsive, mobile, desktop*.
+2. **Module responsibility is presentational** — the cluster lands in a
+   module whose one-reason-to-change is presentation (a React component
+   tree, a page route, a style system). A pure data module with a
+   downstream UI consumer does **not** count.
+3. **Acceptance criteria mention visual or interaction behavior** —
+   color, spacing, focus state, hover, animation, accessibility
+   (keyboard nav, contrast, screen reader), responsive breakpoints.
+
+One signal is too loose; three is too strict. Two is the right bar.
+
+### Stamping Rule
+
+Every frontend-flavored issue gets the `**Frontend design**` stamp,
+**regardless of backlog size**. Even a one-issue UI tweak gets the stamp —
+uniformity beats optimisation. `/software-design` performs the stamp pass
+even when otherwise eligible for early-exit (see `SKILL.md`).
+
+The four field values are written **mechanically**, not interpreted:
+
+- **Stack** — read from the project's package manifest / framework config.
+- **Intent** — paraphrase the `Behavior:` line.
+- **Aesthetic direction** — always the literal string
+  `see docs/design/direction.md`. Do not invent a direction; do not check
+  whether the file exists. `/frontend-design` self-bootstraps on first run.
+- **Token authority** — the path recorded in `docs/design/direction.md`'s
+  `Token authority:` field. If the direction doc does not exist yet,
+  write the literal `recorded in docs/design/direction.md` placeholder.
+- **Review** — only add the line `Review: required` when the issue's
+  acceptance criteria explicitly mention accessibility, contrast, or a
+  design audit. Otherwise omit.
+
+The stamping pass never opens `docs/design/direction.md` and never asks
+about typography, color, or motion. Those decisions belong to
+`/frontend-design`, not here.
 
 ---
 

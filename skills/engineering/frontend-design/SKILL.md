@@ -7,321 +7,181 @@ description: >
   frontend for accessibility".
 ---
 
-# Frontend Design Skill
+# Frontend Design
 
-Create, refine, and audit beautiful, intentional, production-ready frontend
-interfaces across React, Next.js, Tailwind CSS, and vanilla HTML/CSS/JS.
+Orchestrates a 7-step loop from prose direction → committed
+`docs/design/direction.md` + paired ADR → instantiated `tokens.css` →
+generated components → audited output across React, Next.js, Tailwind,
+and vanilla HTML/CSS/JS.
 
----
+Substance lives in three supporting files: [banned-patterns.md](banned-patterns.md)
+(tiered anti-pattern catalogue with paired alternatives),
+[direction-doc-format.md](direction-doc-format.md) (9-field spec +
+bootstrap mechanics + ADR pairing), [design-tokens.md](design-tokens.md)
+(color / type / motion / spacing+depth taxonomy).
 
 ## Overview
 
-### What This Skill Does
-
-This skill guides Claude Code through the complete frontend design lifecycle:
-
-1. **Discovery** — gather brand, goals, audience, and stack constraints.
-2. **Direction** — propose and commit to a named aesthetic direction before writing any code.
-3. **Generation** — produce accessible, token-based, responsive markup and styles.
-4. **Self-critique** — apply the built-in quality checklist immediately after generation.
-5. **Audit / Review** — accept existing UI code and produce a structured compliance report plus an improved version.
-
-### When to Use It
-
-Invoke this skill when the request includes any of the following signals:
-
-- "design", "build a UI", "create a component", "make a page"
-- "re-theme", "restyle", "update the look and feel"
-- "run a design review", "audit my UI", "check accessibility"
-- "design system", "color palette", "typography scale"
-
-### When Not to Use It
-
-- Pure backend or data-layer work (API routes, DB queries, auth logic)
-- Non-visual output (CLI tools, scripts, documentation)
-- Structural refactors with no visible change
-
-### Project Assumptions
-
-- **Greenfield:** no prior design system exists; the skill builds tokens from scratch.
-- **Existing codebase:** the skill reads current tokens and components before proposing changes; it does not silently overwrite a design system.
-- For Next.js App Router projects, all generated components default to `"use client"` only when client-side interactivity is required; otherwise they are RSC-safe.
-
----
+**Use for:** greenfield UIs, re-themes, design reviews, accessibility
+audits, design-token foundations, component generation. Defaults: WCAG
+2.2 AA minimum, keyboard + screen-reader paths, `prefers-reduced-motion`
+respected, fluid from 320 px up, Next.js RSC-safe unless interactivity
+is needed. **Skip for:** pure logic / data-layer, CLI, prose, structural
+refactors with no visible change. **Existing codebases:** read current
+tokens and components before proposing; never silently overwrite.
 
 ## Invocation & Inputs
 
-### Auto-Invocation Triggers
-
-Claude Code should activate this skill automatically when the user's request
-matches one of the phrases in the `description` field above, or when a task
-clearly involves creating or editing visual UI.
-
-### Required Information
-
-Before generating any code, collect the following. If any item is missing,
-ask the user directly — do not invent values.
-
-| Field                   | Question to Ask                                                 | Example                                           |
-| ----------------------- | --------------------------------------------------------------- | ------------------------------------------------- |
-| **Stack**               | "Which stack are you using?"                                    | Next.js 15 + Tailwind v4                          |
-| **Intent**              | "What are you building, and who is it for?"                     | A SaaS analytics dashboard for data engineers     |
-| **Brand**               | "Do you have brand colors, fonts, or a logo?"                   | Primary #1A1A2E, accent #E94560                   |
-| **Content structure**   | "What are the key sections or components?"                      | Sidebar nav, data table, metric cards, chart area |
-| **Constraints**         | "Any technical or design constraints?"                          | Must integrate with existing shadcn/ui tokens     |
-| **Aesthetic direction** | "Any references or adjectives that describe the feel you want?" | Dense, editorial, print-inspired                  |
-
-If the user says "I don't know" or "surprise me" for aesthetic direction,
-proceed to the Direction Proposal step (see Iteration Loop).
-
----
-
-## Behavioral Rules
-
-### Typography
-
-- Always pair fonts with a clear **role distinction**: one face for display/headings, one for body, optionally one for monospace data or code. Never use two faces of identical optical weight.
-- Apply a **modular type scale** (e.g., Major Third or Perfect Fourth ratio). Never use a flat set of arbitrary font sizes.
-- Set `line-height` relative to font size, not as a fixed pixel value. Body text: 1.5–1.65. Display headings: 1.05–1.2.
-- Cap body line length at **60–75 characters** (use `max-ch` or equivalent). Never let prose columns span the full viewport width.
-- **Avoid as defaults**: Inter, Roboto, Arial. These may only be used if the user's brand explicitly specifies them. Instead choose from less ubiquitous options (e.g., DM Sans, Syne, Epilogue, Fraunces, Space Grotesk, Instrument Serif, Manrope, Geist).
-- Always declare fonts via CSS custom properties or Tailwind theme keys — never hardcode font-family strings in component JSX.
-
-### Color Systems
-
-- Build every palette from a **semantic token layer**: `--color-surface`, `--color-on-surface`, `--color-primary`, `--color-on-primary`, `--color-accent`, `--color-border`, `--color-muted`, plus state variants (error, warning, success, info).
-- Derive light and dark theme values from the same token names; never use separate className switches for every dark-mode color.
-- **Contrast minimums**: normal body text ≥ 4.5:1 against background (WCAG 2.2 AA); large text and UI components ≥ 3:1.
-- **Avoid as defaults**: purple/indigo gradient pairs, `#000000`/`#ffffff` as literal values (use near-black and near-white with deliberate hue instead), simultaneous blue-and-purple accents.
-- Do not use gray text on a colored background unless contrast is verified and intentional.
-- Saturated colors on dark surfaces must be lightened to maintain contrast — never copy hex values from a brand guide without testing against the actual background.
-
-### Layout
-
-- Use a **named spacing scale**: define `--space-1` through `--space-10` (or Tailwind's spacing config) and reference only those tokens. Never write `margin: 13px`.
-- Layouts must be defined at **three breakpoints minimum**: mobile (< 640 px), tablet (640–1024 px), desktop (> 1024 px). Use `clamp()` for fluid values where appropriate.
-- Prefer **CSS Grid for page structure**, Flexbox for component-level alignment. Never use absolute positioning for primary layout.
-- Respect safe areas on mobile (`env(safe-area-inset-*)` for fixed elements).
-- Content containers should have a `max-width` that feels intentional, not a full-bleed default.
-- Maintain **optical alignment** — visually align items to their perceptual edge, not their bounding box, especially for icons next to text.
-
-### Motion and Depth
-
-- Motion must be **purposeful**: use it to confirm actions, guide focus transitions, and reveal hierarchy — not as decoration.
-- All animations must respect `prefers-reduced-motion`. Provide a `@media (prefers-reduced-motion: reduce)` block that removes or simplifies every transition.
-- Duration: micro-interactions (< 150 ms), page transitions (200–400 ms), modal reveals (250–350 ms). Never use durations above 500 ms for UI feedback.
-- Easing: use `ease-out` for elements entering the screen, `ease-in` for exiting, `ease-in-out` for position changes. Never use linear easing for visible motion.
-- Elevation/shadow: define a **compact named scale** (3–5 levels: `shadow-sm`, `shadow-md`, `shadow-lg`, `shadow-xl`, `shadow-overlay`). Every component must use only named levels — no ad hoc `box-shadow` values.
-
-### Imagery and Iconography
-
-- Choose a **single icon family** per project and do not mix families (e.g., Lucide only, or Phosphor only).
-- Icons used as standalone actions must have an `aria-label` or be accompanied by a visible label.
-- Do not place an oversized icon (> 2rem) above a heading as the sole visual element — pair it with a meaningful illustration, photograph, or data visualization if visual weight is needed.
-- Stock photography: if included, must have a direct connection to the content it accompanies. Never use vague "people at laptops" or "handshake" imagery as filler.
-- Use `aspect-ratio` to prevent layout shift on image load. Always include `alt` text.
-
-### Accessibility
-
-- All interactive elements must be reachable by keyboard and have a **visible focus indicator** that meets WCAG 2.2 criterion 2.4.11 (focus not obscured) and 2.4.13 (minimum focus appearance).
-- Every form input needs a programmatically associated `<label>`. Never use `placeholder` as a substitute for a label.
-- Landmark regions (`<main>`, `<nav>`, `<aside>`, `<header>`, `<footer>`) must be present on every page-level layout.
-- Color alone must never convey meaning (e.g., a red border for error must also include an icon or text).
-- Images: non-decorative images require descriptive `alt`; decorative images use `alt=""`.
-- ARIA: use native HTML semantics before reaching for ARIA roles. `role="button"` on a `<div>` is a defect.
-
----
-
-## Anti–AI-Slop Constraints
-
-These are hard rules, not suggestions. Violating them is treated as a defect.
-
-### The Named Direction Rule
-
-**Before writing any code**, the skill must:
-
-1. State the aesthetic direction in one sentence (e.g., "This dashboard will follow a dense, editorial-print direction with a dark ink-paper palette and a condensed serif/tabular-mono type pair.").
-2. Confirm with the user or proceed if the user already approved a direction.
-3. Never start coding without a committed direction.
-
-If the user later requests a change that contradicts the committed direction (e.g., "add a gradient glow to this editorial layout"), the skill must:
-
-- Name the conflict explicitly: "That gradient glow would clash with the editorial-print direction we committed to."
-- Propose a direction-consistent alternative.
-- Only override if the user explicitly acknowledges and accepts the direction change.
-
-### Banned Default Patterns
-
-The following patterns may not appear in generated output unless the user has explicitly requested them and acknowledged the trade-off:
-
-| Pattern                                                                         | Why It's Banned                                                              |
-| ------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
-| Full-bleed gradient hero (gradient + centered headline + two CTAs + screenshot) | Used in >60% of AI-generated SaaS pages; signals no creative investment      |
-| Cardocalypse (cards within cards, every section wrapped in a rounded card)      | Produces visual noise and destroys hierarchy                                 |
-| Purple/indigo as default accent                                                 | The statistically most common AI-generated UI accent; signals generic output |
-| Glassmorphism as a structural element                                           | Legibility degrades in real content scenarios                                |
-| Neon/cyan on dark for "hacker" or "tech" vibe                                   | Overused to the point of being a parody                                      |
-| Oversized rounded icon above heading with no supporting content                 | Padding a layout without adding information                                  |
-| Thick colored-border cards as default container                                 | Second most common AI card pattern after shadow-heavy cards                  |
-| `Inter` or `Roboto` without explicit brand justification                        | Not wrong, just a signal that no type decision was made                      |
-| Linear or elastic bounce on every button click                                  | Treats motion as noise, not signal                                           |
-| Empty CTA copy ("Get started", "Learn more")                                    | Copy defect, not a design defect — but flag it                               |
-
-### Warning Behavior
-
-When the user requests a banned pattern, respond with:
-
-```
-⚠️ Design direction conflict: "[pattern]" is a common AI-generated UI signature
-   that undermines the "[direction name]" aesthetic.
-
-   Alternative that fits the current direction:
-   → [specific alternative with brief rationale]
-
-   If you want to override, say "proceed anyway" and I will implement it.
-```
-
----
+Auto-invoke on phrases in `description`, or any task that visibly creates
+or edits UI. Collect — ask, never invent: **Stack**, **Intent**, **Brand**,
+**Content structure**, **Constraints**, **Aesthetic direction**. "Surprise
+me" on direction → Bootstrap with soft-refusal handling.
 
 ## Iteration Loop
 
-### Step 1 — Direction Proposal
+### 1. Bootstrap
 
-After gathering inputs, propose **2–3 named aesthetic directions**. For each:
+Check `docs/design/direction.md`. If present, reuse. If missing, grill
+the 9 fields per [direction-doc-format.md](direction-doc-format.md) —
+ordering, "good enough" bars, 2-attempt cap, `Tentative:` prefix,
+soft/hard/partial refusal handling. On completion, write **both**
+`docs/design/direction.md` and `docs/adr/NNNN-frontend-design-direction.md`
+in one pass.
 
-- Give it a short name (e.g., "Tactile Brutalism", "Warm Editorial", "Precision Utility")
-- Write one paragraph describing the visual feel
-- List: typography approach, primary palette, layout personality, motion character
-- Flag any risks or constraints (e.g., "Heavy serif may not render well at small sizes on Android")
+### 2. Direction Proposal
 
-### Step 2 — Self-Critique Each Direction
+Greenfield: propose **2–3 named directions**, each with name, one-paragraph
+feel, four lens fields (typography / palette / layout / motion),
+anti-direction. Otherwise: reuse committed.
 
-Apply the following checklist to each proposed direction before presenting it:
+### 3. Self-Critique
 
-- [ ] Does this direction avoid all banned default patterns?
-- [ ] Is the type pairing genuinely differentiated (distinct roles, different optical weight)?
-- [ ] Can the color palette achieve WCAG 2.2 AA contrast in both light and dark modes?
-- [ ] Does the layout approach work at 320 px without horizontal scrolling?
-- [ ] Is the motion character purposeful rather than decorative?
-- [ ] Is this direction consistent — would the 10th component still feel like the 1st?
+7-item tiered checklist per proposed direction; evidence required per item:
+(1) No BLOCK patterns ([banned-patterns.md](banned-patterns.md)) — bare check or one-line justification per occurrence;
+(2) WARN patterns audited — bare check if zero, else one-line reason each;
+(3) Clear POV — one-sentence statement;
+(4) Distinct from siblings — one phrase per contrast;
+(5) Holds shape at 320 / 768 / 1280 — one phrase per breakpoint describing reflow;
+(6) Type / color / motion named (no "TBD") — named values in body;
+(7) Anti-direction acknowledged — the field itself is the evidence.
 
-Flag any direction that fails two or more checks. Offer a refined version instead.
+**Failure protocol.** BLOCK → silent re-run Step 2 for that slot, cap 2;
+on the 3rd surface to user. WARN → annotate, surface in Step 4.
 
-### Step 3 — Direction Confirmation
+### 4. Confirmation
 
-Present the proposals. Wait for user feedback. If the user selects one,
-confirm: "Proceeding with **[Direction Name]**. I'll stay consistent with
-this throughout." Do not deviate without explicit instruction.
+Present surviving proposals. User picks. Confirm: "Proceeding with
+**[Name]**."
 
-### Step 4 — Code Generation
+### 5. Design Language Instantiation
 
-Generate markup and styles following all Behavioral Rules. Annotate
-significant design decisions with brief inline comments so the user
-understands why each choice was made (not just what it is).
+Write the complete `tokens.css` (or Tailwind theme) at the *Token
+authority path* from the direction doc. Direction may not remain prose:
+type roles get size/weight/line-height; palette becomes OKLCH with
+`light-dark()`; spacing, shadow/elevation, radius, motion durations +
+easing all become machine-readable. See [design-tokens.md](design-tokens.md).
 
-### Step 5 — Post-Generation Audit
+### 6. Generation
 
-Immediately after generating code, run the Design Review Checklist (see
-Review Mode below) against the output. If any item fails, apply fixes and
-note them in a short post-generation report:
+Components reference only tokens from Step 5. No raw px, no inline hex,
+no ad-hoc shadows or margins.
 
-```
-✅ Post-generation audit:
-   - Contrast: all text passes WCAG 2.2 AA ✓
-   - Focus indicators: added to all interactive elements ✓
-   - Spacing: normalized to token scale ✓
-   - [Issue found]: fixed by [action taken]
-```
+### 7. Post-Generation Audit
 
----
+Always runs. **Always-tier (grep):** hex/`rgb(`/named colors outside
+`tokens.css`; missing `color-scheme`; missing no-flash script when
+toggle exists; raw px in components; ad-hoc `box-shadow`; slop-font
+tripwire. **Smoke-tier (Storybook / Playwright / dev server):** render
+both modes, axe-core per-mode contrast, toggle visible in both.
+**Review Mode tier (opt-in):** dual-mode visual diff, toggle persistence
+round-trip, broken focus-ring per mode. Auto-apply unambiguous
+always-tier fixes; report the rest.
 
-## Review Mode (Design Audit)
+## Named Direction Rule
 
-### Trigger Phrases
+Direction commitment is mandatory. Conflicts surfaced explicitly ("that
+gradient glow clashes with the editorial-print direction"). Override
+only on explicit acknowledgement with a brand-specific reason added to
+the direction doc's *Banned-pattern overrides*.
 
-Activate review mode when the user says:
+**Slop-font tripwire:** `Inter`, `Geist`, `Roboto`, `Arial` are
+default-detection triggers — state the direction-derived justification
+*before* emitting one.
 
-- "review my UI", "audit this design", "check accessibility"
-- "run a design review", "check this against web guidelines"
-- "what's wrong with this UI"
+## Warning Behavior
 
-### How It Works
+Tiered, with paired alternatives. Full catalogue: [banned-patterns.md](banned-patterns.md).
 
-1. Ask for the file(s) or pattern to review if not provided.
-2. Fetch and apply the Vercel Web Interface Guidelines from:
-   `https://raw.githubusercontent.com/vercel-labs/web-interface-guidelines/main/command.md`
-   (Use WebFetch to retrieve live rules each time.)
-3. Apply the internal checklist below.
-4. Produce a structured report in `file:line` format.
-5. Output a revised version of the code with all fixable issues resolved.
-
-### Design Review Checklist
-
-#### Accessibility
-
-- [ ] All images have appropriate `alt` text
-- [ ] All form inputs have associated `<label>` elements
-- [ ] All interactive elements are keyboard-accessible
-- [ ] Focus indicators are visible and meet WCAG 2.2 AA (2.4.11, 2.4.13)
-- [ ] Color is not the only means of conveying meaning
-- [ ] ARIA is used only where native semantics are insufficient
-- [ ] `prefers-reduced-motion` is respected for all animations
-
-#### Readability and Hierarchy
-
-- [ ] Heading levels are sequential (no skipped levels)
-- [ ] Body text meets minimum contrast (4.5:1 normal, 3:1 large/UI)
-- [ ] Line length is capped at ~75 characters for prose
-- [ ] Line height is appropriate per text size (not uniform across all sizes)
-- [ ] Type scale is consistent and uses named tokens
-
-#### Layout and Spacing
-
-- [ ] All spacing values reference the design token scale
-- [ ] Layout is tested at 320 px, 768 px, and 1280 px
-- [ ] No content is hidden behind fixed headers without scroll-margin compensation
-- [ ] Safe area insets applied for fixed/sticky elements on mobile
-
-#### Color and Contrast
-
-- [ ] Semantic color tokens are used (not hardcoded hex)
-- [ ] Dark mode (if present) is derived from the same token names
-- [ ] No gray text on colored background without verified contrast
-- [ ] Elevation/shadow system uses only named scale levels
-
-#### Microcopy and Content
-
-- [ ] CTA labels describe the action (not "Click here" or "Submit")
-- [ ] Error messages explain what went wrong and how to fix it
-- [ ] Loading and empty states are defined for all dynamic content
-- [ ] No placeholder copy ("Lorem ipsum") in generated output
-
-### Review Report Format
+- **BLOCK** — refuse by default; override needs a brand-specific reason in the direction doc.
+- **WARN** — single-line callout with the *instead reach for…* alternative; user accepts inline.
+- **INFORM** — note in post-generation audit only.
 
 ```
-## Design Review: [filename or component name]
-Date: [date]
-Aesthetic direction: [detected or stated]
-
-### Critical (must fix before ship)
-[file]:[line] — [rule violated] — [suggested fix]
-
-### Recommended (should fix)
-[file]:[line] — [rule] — [suggested improvement]
-
-### Informational
-[file]:[line] — [observation, no action required]
-
-### Summary
-[N] critical, [N] recommended, [N] informational issues found.
-Revised code follows.
+⚠️  [pattern] ([tier]) conflicts with the "[direction]" direction.
+    Instead reach for: [alternative].
+    To override, add a brand-specific reason to docs/design/direction.md.
 ```
 
----
+## Responsive (HARD RULE)
+
+Audit breakpoints **320 / 768 / 1280**; design considerations 640 / 1024.
+**Absolute:** no horizontal scroll at any width ≥ 320 px. Fully
+responsive iff **all 7** hold: (1) no horizontal scroll ≥ 320 px;
+(2) tap targets ≥ 44×44 px on mobile (WCAG 2.5.5); (3) text readable
+(≥ 14 px body; 45–75 ch; sub-45 ch only when intentional); (4) no
+content hidden without an equivalent alternative; (5) interactive
+affordances reachable at every breakpoint (no hover-only on touch);
+(6) layout **reflows**, not just rescales, at 768 and 1280;
+(7) images/media use intrinsic sizing (`aspect-ratio`, `object-fit`).
+**Query default:** `@container` for component-internal behaviour;
+`@media` reserved for page-level shifts (nav, sidebar, route grids).
+
+**Banned failure modes (audited):** horizontal scroll < 360 px; content
+hidden on mobile with no alternative; hover-only on touch; fixed-pixel
+layouts that scale without reflowing; tap targets < 44×44 px on mobile;
+body text < 14 px; modals overflowing viewport without scroll; `100vh`
+without `dvh`/`svh` fallback.
+
+## Light / Dark (HARD RULE)
+
+Mechanism by chrome. **Static / marketing / single-screen / embeds:**
+`prefers-color-scheme` only; toggle optional. **Apps with persistent
+chrome:** three-state toggle **required** — `system` / `light` / `dark`,
+default `system`, persist in `localStorage`, respect
+`prefers-color-scheme` changes while in `system` mode. Toggle location
+priority: header end-cap → settings/profile menu → footer last resort.
+
+**No-flash mandate.** Inline `<head>` script sets the theme class before
+first paint. Flash on load is a defect.
+
+**Audit detection (tiered).** *Always:* `color-scheme` on `:root`,
+no-flash script when toggle exists, every color token uses `light-dark()`
+or paired values, shadows tokenised. *Smoke:* render both modes,
+axe-core per-mode contrast, toggle visible in both. *Review Mode:*
+dual-mode visual diff, toggle persistence, broken focus-ring per mode.
+Single-mode-only output is a BLOCK in [banned-patterns.md](banned-patterns.md).
+
+## Review Mode
+
+**Opt-in.** Triggered by "review my UI" / "audit this design" / "check
+accessibility", **or** by a stamped issue body containing `Review: required`
+(set upstream by `/software-design` when AC mention accessibility,
+contrast, or a design audit). Flow: WebFetch the Vercel Web Interface
+Guidelines from `https://raw.githubusercontent.com/vercel-labs/web-interface-guidelines/main/command.md`,
+apply the **supplemental** checklist (~10 items, no Vercel duplications),
+emit a `file:line` report, then a revised version with fixable issues
+resolved.
+
+Supplemental checklist: WCAG 2.4.11 / 2.4.13 specifics, ≥ 4.5:1 normal
+and ≥ 3:1 large/UI; every spacing/color/shadow/radius references a named
+token; layout tested at 320 / 768 / 1280; `scroll-margin-top` for
+fixed-header anchors; no `Lorem ipsum`; loading and empty states defined;
+every visible choice traces to `docs/design/direction.md`; light and
+dark both tuned; `prefers-reduced-motion` honoured; slop-font tripwire clean.
 
 ## Output Format
 
-- Code: fenced blocks with language tag (e.g., ` ```tsx `, ` ```css `)
-- Design decisions: brief inline comment above the relevant rule
-- Token definitions: output in a separate `tokens.css` or Tailwind config block first, then reference them in component code
-- If the output is long (> 200 lines), offer to split into separate files
+Fenced blocks with language tags. Token definitions in a separate
+`tokens.css` / theme block first, then referenced in component code.
+Inline comments only where *why* is non-obvious. Offer to split outputs
+that exceed ~200 lines.

@@ -48,13 +48,15 @@ Three entry modes, each with a matching prompt:
 
 ## Files in this skill
 
-| File                      | Role                                                                |
-| ------------------------- | ------------------------------------------------------------------- |
-| `SKILL.md`                | Behavioral rules, anti-slop constraints, iteration loop, checklist. |
-| `prompts/design.prompt.md`| Greenfield design flow.                                             |
-| `prompts/retune.prompt.md`| Re-theme / refactor flow on existing components.                    |
-| `prompts/review.prompt.md`| Design review / audit flow.                                         |
-| `DESIGN_BRIEF.md`         | Product spec for the skill itself: goals, anti-goals, scope.        |
+| File                        | Role                                                                              |
+| --------------------------- | --------------------------------------------------------------------------------- |
+| `SKILL.md`                  | Orchestrator: 7-step iteration loop, hard rules, warning behaviour, review mode.  |
+| `banned-patterns.md`        | Tiered (BLOCK / WARN / INFORM) anti-pattern catalogue with paired alternatives.   |
+| `direction-doc-format.md`   | 9-field spec for `docs/design/direction.md` + bootstrap mechanics + ADR pairing.  |
+| `design-tokens.md`          | Color / type / motion / spacing+depth token taxonomy used in Step 5.              |
+| `prompts/design.prompt.md`  | Greenfield design flow.                                                           |
+| `prompts/retune.prompt.md`  | Re-theme / refactor flow on existing components.                                  |
+| `prompts/review.prompt.md`  | Design review / audit flow.                                                       |
 
 ---
 
