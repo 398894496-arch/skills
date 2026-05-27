@@ -1,6 +1,7 @@
 {
   "name": "dividedby-skills",
   "skills": [
+    "./skills/engineering/frontend-design",
     "./skills/engineering/software-design"
   ]
 }
