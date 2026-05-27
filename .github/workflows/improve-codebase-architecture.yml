@@ -37,10 +37,15 @@ jobs:
       - name: Install Claude Code
         run: npm install -g @anthropic-ai/claude-code
 
-      - name: Install mattpocock/skills plugin
+      - name: Install /improve-codebase-architecture skill
         run: |
-          mkdir -p ~/.claude/plugins
-          git clone --depth 1 https://github.com/mattpocock/skills.git ~/.claude/plugins/mattpocock-skills
+          set -euo pipefail
+          tmp=$(mktemp -d)
+          git clone --depth 1 https://github.com/mattpocock/skills.git "$tmp/mattpocock-skills"
+          mkdir -p ~/.claude/skills
+          cp -R "$tmp/mattpocock-skills/skills/engineering/improve-codebase-architecture" ~/.claude/skills/
+          test -f ~/.claude/skills/improve-codebase-architecture/SKILL.md
+          echo "Installed skill from mattpocock/skills@$(git -C "$tmp/mattpocock-skills" rev-parse --short HEAD)"
 
       - name: Ensure provenance label exists
         run: |
