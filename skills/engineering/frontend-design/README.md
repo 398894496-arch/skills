@@ -12,18 +12,6 @@ accessibility".
 
 ---
 
-## Where this skill sits
-
-Three entry modes, each with a matching prompt:
-
-| Mode    | Prompt                     | Use when                   |
-| ------- | -------------------------- | -------------------------- |
-| Design  | `prompts/design.prompt.md` | Building a UI from scratch |
-| Re-tune | `prompts/retune.prompt.md` | Refactoring an existing UI |
-| Review  | `prompts/review.prompt.md` | Auditing existing markup   |
-
----
-
 ## What good output looks like
 
 - A **named aesthetic direction** committed before any markup is written
@@ -54,9 +42,6 @@ Three entry modes, each with a matching prompt:
 | `banned-patterns.md`        | Tiered (BLOCK / WARN / INFORM) anti-pattern catalogue with paired alternatives.   |
 | `direction-doc-format.md`   | 9-field spec for `docs/design/direction.md` + bootstrap mechanics + ADR pairing.  |
 | `design-tokens.md`          | Color / type / motion / spacing+depth token taxonomy used in Step 5.              |
-| `prompts/design.prompt.md`  | Greenfield design flow.                                                           |
-| `prompts/retune.prompt.md`  | Re-theme / refactor flow on existing components.                                  |
-| `prompts/review.prompt.md`  | Design review / audit flow.                                                       |
 
 ---
 
