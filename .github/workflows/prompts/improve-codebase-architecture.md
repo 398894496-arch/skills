@@ -12,6 +12,28 @@ skills themselves — not the repo's meta-files (workflow, CONTEXT.md,
 ADRs, README) and not the repo's tooling. If you cannot find a
 candidate inside `skills/`, emit `SKIPPED`.
 
+## Ecosystem context — read before proposing
+
+The skills in this repo **extend** Matt Pocock's skills plugin at
+<https://github.com/mattpocock/skills>. They are intended to be installed
+alongside it, not as a replacement.
+
+Before declaring any cross-reference broken, **read Matt's repo** (use
+`WebFetch` on the GitHub URL or `gh api repos/mattpocock/skills/...`).
+Skills you will find there include `grill-with-docs`, `to-prd`,
+`to-issues`, `tdd`, `diagnose`, `triage`, `prototype`, `handoff`,
+`write-a-skill`, `caveman`, `grill-me`, `improve-codebase-architecture`.
+
+A link or reference like `../grill-with-docs/ADR-FORMAT.md` from inside
+`skills/engineering/frontend-design/` is **not broken** — it points to
+the sibling skill in Matt's plugin, which is co-installed at runtime.
+Cross-plugin links rendering as broken on GitHub is the expected cost
+of the extension pattern, not a defect.
+
+You may only file a `defect:` issue for a missing reference if you have
+verified the target does not exist in either this repo **or**
+mattpocock/skills.
+
 ## Task
 
 1. List prior proposals labelled `source:architecture-review` (both open and
