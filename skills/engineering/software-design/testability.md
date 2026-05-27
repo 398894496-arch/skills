@@ -113,7 +113,9 @@ that accepts a context.
 
 **Temporal coupling.** "You must call `initialize()` before `process()`
 before `finalize()`." Each operation should be callable independently,
-or the required order should be enforced by the type system.
+or the required order should be encoded in the types — e.g. `reserve()`
+returns a token that `dispatch()` requires as input, so the wrong order
+won't compile.
 
 **Void commands with no observable result.** If a function does
 something but returns nothing, tests must check side effects. Where
