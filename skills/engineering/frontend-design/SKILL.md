@@ -28,7 +28,10 @@ audits, design-token foundations, component generation. Defaults: WCAG
 respected, fluid from 320 px up, Next.js RSC-safe unless interactivity
 is needed. **Skip for:** pure logic / data-layer, CLI, prose, structural
 refactors with no visible change. **Existing codebases:** read current
-tokens and components before proposing; never silently overwrite.
+tokens and components before proposing; never silently overwrite, but do
+**challenge inherited tokens, stack, or aesthetic** when they predate
+this skill and conflict with the brief. Name the mismatch, propose the
+better fit, let the user accept or override.
 
 ## Invocation & Inputs
 
@@ -41,8 +44,13 @@ me" on direction → Bootstrap with soft-refusal handling.
 
 ### 1. Bootstrap
 
-Check `docs/design/direction.md`. If present, reuse. If missing, grill
-the 9 fields per [direction-doc-format.md](direction-doc-format.md) —
+Check `docs/design/direction.md`. If present and complete (all 9 fields,
+paired ADR exists), reuse. If present but **thin, vague, or predates
+this skill** (missing fields, no paired ADR, prose-only aesthetic
+hand-waves), treat it as a *candidate to challenge* — carry it into
+Step 2 as one option alongside a revised proposal, not as a settled
+default. If missing, grill the 9 fields per
+[direction-doc-format.md](direction-doc-format.md) —
 ordering, "good enough" bars, 2-attempt cap, `Tentative:` prefix,
 soft/hard/partial refusal handling. On completion, write **both**
 `docs/design/direction.md` and `docs/adr/NNNN-frontend-design-direction.md`

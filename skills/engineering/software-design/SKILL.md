@@ -97,6 +97,16 @@ Read, in order:
 Do not begin design until you have read the glossary. Use its terms for
 every module name, interface, and rewritten issue.
 
+**Challenge inherited choices.** CONTEXT.md, ADRs, and the current stack
+often predate this skill. If a prior decision is a poor fit for the
+backlog you're about to design against — wrong persistence model, wrong
+sync/async boundary, a stack that fights the seams you're about to draw,
+a library choice that's since been superseded — name the mismatch
+explicitly. Surface one proposal with the tradeoff in plain terms; let
+the user accept (and defer the revision to `/grill-with-docs` for an
+ADR) or override. Do not silently inherit a bad fit just because it's
+already written down.
+
 ### 2. Stamp frontend-flavored issues with the routing block
 
 Before any module/seam work, scan every open issue against the
