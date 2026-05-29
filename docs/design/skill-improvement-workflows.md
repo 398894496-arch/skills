@@ -29,10 +29,12 @@ without the live tracker.
   run-books.
 - **Sanitizer guard** — pure. One reason to change: what counts as leaked
   private content. Interface: `check(body) → allow | block(reason)`. Must not
-  depend on the tracker. Used by the gap-scanner.
+  depend on the tracker. Used by both run-books — each reads a private source
+  (the KB / the curated repos) and files into this public tracker (#26).
 - **Self-improvement run-book** — orchestrator. Reads the KB + this repo,
   builds/commits the integration map, diffs it to surface refinements, calls the
-  proposal gate, files ≤1 `self-improvement` issue. Never edits skills directly.
+  sanitizer guard then the proposal gate, files ≤1 `self-improvement` issue.
+  Never edits skills directly.
 - **Gap-scanner run-book** — orchestrator. Reads the curated repo-list, scans
   read-only with cleanup, detects recurring needs, calls the sanitizer guard
   then the proposal gate, files ≤1 generalized proposal.
@@ -52,8 +54,10 @@ without the live tracker.
 - At most one issue filed per run, per workflow (enforced by the gate).
 - The VPS auto-commits analysis (the integration map) only; skill changes are
   always proposed as issues, never merged (ADR 0003).
-- Gap-scanner issues are generalized — no private-repo code (enforced by the
-  sanitizer guard; this repo's tracker is public).
+- Both run-books' filed issues are generalized — no private content (enforced by
+  the sanitizer guard on `title + body`; this repo's tracker is public). #26
+  extended the guard from the gap-scanner to self-improvement, which also reads a
+  private source (the KB).
 - The integration map lives consumer-side; agent-research never depends on this
   repo.
 

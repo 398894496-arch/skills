@@ -42,12 +42,17 @@ helper boundary.
 5. **Propose at most one refinement.** Diff the committed map against the current
    skills/KB to surface refinement candidates (you may invoke
    `improve-codebase-architecture` as the analysis step). Give each candidate a
-   stable `dedup_key`, a `priority`, a `title` and a generalized `body`. The
-   proposal gate decides — never your own judgement on the cap:
+   stable `dedup_key`, a `priority`, a `title` and a generalized `body`.
+
+   **Sanitize, then gate.** Your candidates are derived in part from the private
+   `agent-research` KB, so run every draft's `title` and `body` (both get
+   published) through the sanitizer, always passing the configured
+   `private_markers`; drop any it blocks. The proposal gate then picks at most one
+   survivor — never your own judgement on the cap:
 
    ```
-   python3 -c "from runbooks.lib.proposal_gate import decide; \
-     print(decide(candidates, open_keys, min_priority=1))"
+   python3 -c "from runbooks.lib.sanitizer import check; print(check(body, private_markers=markers))"
+   python3 -c "from runbooks.lib.proposal_gate import decide; print(decide(clean, open_keys, min_priority=1))"
    ```
 
    where `open_keys` are the dedup keys of issues already open under
@@ -63,6 +68,11 @@ helper boundary.
 
 - **Propose, never merge.** At most one issue per run (the gate enforces it; zero
   is fine). **No skill edits** — the only direct mutation is the committed map.
+- **Never leak private KB content.** The sanitizer blocks fenced code, file
+  paths, and import lines — the load-bearing structural guard (the KB may hold a
+  stray secret or private path). It also over-blocks public URLs with a path, so
+  **cite sources by bare domain** (`martinfowler.com`), never a full URL with a
+  path. A draft that trips the sanitizer is dropped, not filed.
 - The map lives in this repo, never in `agent-research` (one-way dependency).
 - Re-runs update the map in place with a minimal diff — never a wholesale
   regeneration.
