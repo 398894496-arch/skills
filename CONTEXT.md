@@ -27,3 +27,17 @@ _Avoid_: agent skill, shared rule, policy.
 A markdown file inside a skill folder that the `SKILL.md` links to for
 detail (e.g. `banned-patterns.md`, `direction-doc-format.md`).
 _Avoid_: doc, reference, attachment.
+
+**Run-book**:
+A cron-driven prompt that an unattended ("AFK") agent follows to perform a
+recurring workflow. Lives in the repo but is **not** a published skill — it
+orchestrates, and may invoke skills as steps. The self-improvement and
+gap-scanner workflows are run-books, not skills.
+_Avoid_: skill, script, job, automation.
+
+**Integration map**:
+A standing analysis doc, auto-maintained by the self-improvement run-book,
+that maps the skills in this repo to the external practices/artifacts tracked
+in the `agent-research` knowledge base. Used as the diff baseline that surfaces
+refinement opportunities. Lives consumer-side (here), never in `agent-research`.
+_Avoid_: crosswalk, comparison table, matrix.
