@@ -1,0 +1,77 @@
+---
+feature: skill-improvement-workflows
+status: in-progress
+parent: "#14"
+---
+
+# Design Plan: skill-improvement AFK workflows (C & D)
+
+Implementation scaffolding for PRD #14. The issue tracker is authoritative for
+issue bodies; this plan records modules, seams, invariants, and the testing
+strategy. See ADR
+[0003](../adr/0003-skill-improvement-workflows-propose-via-issues.md) for the
+producer/decider model and `CONTEXT.md` for `run-book` and `integration map`.
+
+## Load-bearing decision: the purity boundary
+
+The **proposal gate** and **sanitizer guard** are **pure decision functions** —
+inputs in, decision out. All tracker, git, and clone I/O is owned by the
+run-books and injected. The tested logic never touches transport. This is the
+seam that makes the ≤1/run cap, dedup, and the no-private-code rule testable
+without the live tracker.
+
+## Modules
+
+- **Proposal gate** — pure. One reason to change: how a run selects/dedups its
+  single proposal. Interface: `decide(candidates, openIssues) → {file: candidate
+  | none}`. Invariants: never returns more than one; dedup is exact-key, not
+  fuzzy; deterministic tie-break. Must not depend on the tracker. Shared by both
+  run-books.
+- **Sanitizer guard** — pure. One reason to change: what counts as leaked
+  private content. Interface: `check(body) → allow | block(reason)`. Must not
+  depend on the tracker. Used by the gap-scanner.
+- **Self-improvement run-book** — orchestrator. Reads the KB + this repo,
+  builds/commits the integration map, diffs it to surface refinements, calls the
+  proposal gate, files ≤1 `self-improvement` issue. Never edits skills directly.
+- **Gap-scanner run-book** — orchestrator. Reads the curated repo-list, scans
+  read-only with cleanup, detects recurring needs, calls the sanitizer guard
+  then the proposal gate, files ≤1 generalized proposal.
+
+## Seams
+
+- **Tracker** — list-open-issues-by-label, create-issue. Owned by the run-books;
+  pure modules never touch it. Fake: in-memory issue set (records created,
+  serves open).
+- **Repo-scan** (gap-scanner) — shallow clone + cleanup. Fake: local fixture
+  directories.
+- **Map store** (self-improvement) — read/write + commit the integration map.
+  Fake: a scratch path.
+
+## Invariants
+
+- At most one issue filed per run, per workflow (enforced by the gate).
+- The VPS auto-commits analysis (the integration map) only; skill changes are
+  always proposed as issues, never merged (ADR 0003).
+- Gap-scanner issues are generalized — no private-repo code (enforced by the
+  sanitizer guard; this repo's tracker is public).
+- The integration map lives consumer-side; agent-research never depends on this
+  repo.
+
+## Testing strategy
+
+- **Proposal gate (#15), Sanitizer guard (#18):** pure unit tests on synthetic
+  inputs. Entry = the decision function. No fakes. Assert only the decision,
+  never how inputs were gathered.
+- **Run-books (#16, #17, #19, #20):** integration dry-runs against a faked
+  tracker + fixture repos, wiring the *real* gate and sanitizer. Assert ≤1
+  filed, dedup respected, map committed, working area empty after scan, filed
+  body passes the real sanitizer. Prompt internals are not unit-tested.
+
+## Issue index
+
+- #15 — Proposal gate helper (pure) + tests
+- #16 — Self-improvement run-book: build/auto-maintain the integration map
+- #17 — Gap-scanner run-book: curated repo-list + read-only scan skeleton
+- #18 — Sanitizer guard (pure) + tests
+- #19 — Self-improvement run-book: file a real refinement (≤1/run)
+- #20 — Gap-scanner run-book: file a real proposal (≤1/run, sanitized)
