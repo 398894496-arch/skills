@@ -203,6 +203,60 @@ class SelfImprovementProposalTest(unittest.TestCase):
         written = [p.name for p in self.map_path.parent.iterdir()]
         self.assertEqual(written, ["integration-map.md"])
 
+    def test_private_signal_in_body_is_blocked_nothing_filed(self):
+        # C reads the private agent-research KB, so its filed payload is guarded
+        # exactly like the gap-scanner's (#26): a would-be high-priority refinement
+        # whose body pastes a file path is dropped before the gate is consulted.
+        tracker = FakeTracker()
+        candidate = {
+            "dedup_key": "k", "priority": 9, "title": "leaky",
+            "body": "The KB note lives at notes/private/charge.py.",
+        }
+        result = self._run(lambda content, kb, repo: [candidate], tracker)
+        self.assertEqual(result["filed"], 0)
+        self.assertEqual(tracker.filed, [])
+
+    def test_private_signal_in_title_is_blocked_nothing_filed(self):
+        # The title is published too, so a clean body does not excuse a leaky title.
+        tracker = FakeTracker()
+        candidate = {
+            "dedup_key": "k", "priority": 9,
+            "title": "Refine tdd per notes/private/charge.py",
+            "body": "A clean, generalized refinement of the tdd skill.",
+        }
+        result = self._run(lambda content, kb, repo: [candidate], tracker)
+        self.assertEqual(result["filed"], 0)
+        self.assertEqual(tracker.filed, [])
+
+    def test_private_marker_in_payload_is_blocked(self):
+        tracker = FakeTracker()
+        candidate = {
+            "dedup_key": "k", "priority": 5, "title": "leaky marker",
+            "body": "This idea came straight from agent-research/secret-notes.",
+        }
+        result = self._run(
+            lambda content, kb, repo: [candidate], tracker,
+            private_markers=["agent-research/secret-notes"],
+        )
+        self.assertEqual(result["filed"], 0)
+        self.assertEqual(tracker.filed, [])
+
+    def test_leaky_candidate_dropped_clean_one_still_files(self):
+        # A leaky high-priority draft is dropped; a clean lower-priority draft
+        # still files. Proves sanitize-then-gate over the survivors.
+        tracker = FakeTracker()
+        leaky = {
+            "dedup_key": "leak", "priority": 9, "title": "x",
+            "body": "see notes/private/config.py",
+        }
+        clean = {
+            "dedup_key": "clean", "priority": 2, "title": "clean refinement",
+            "body": "Cross-link the coverage practice into the tdd skill.",
+        }
+        result = self._run(lambda content, kb, repo: [leaky, clean], tracker)
+        self.assertEqual(result["filed"], 1)
+        self.assertEqual(tracker.filed[0]["title"], "clean refinement")
+
     def test_analysis_only_run_without_tracker_files_nothing(self):
         # Backward compat: the #16 analysis-only invocation still works.
         commit = FakeCommit()

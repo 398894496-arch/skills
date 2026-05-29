@@ -38,6 +38,17 @@ read as broadly useful. The scanner reads private repos read-only, shallow, and
 cleans up after each run; the repo list is an explicit curated config, not
 auto-discovery of everything the maintainer owns.
 
+**Amendment (#26): the sanitizer guard covers self-improvement too.** This ADR
+originally framed the structural sanitizer around the gap-scanner, because that
+was the workflow obviously reading private *repos*. But self-improvement also
+reads a private source — the `agent-research` KB — and (since #19) files issues
+whose title/body are derived from it into this same public tracker. That is the
+same private-source → public-tracker risk shape, so the guard applies to both:
+each run-book runs its filed `title + body` through `check()` (always passing
+the configured `private_markers`) before filing, dropping any draft that trips.
+The guard is structural and necessary-not-sufficient (see `sanitizer.py`); prose
+discipline still matters for private identifiers the markers don't cover.
+
 These workflows are **independent jobs**, not a pipeline. The KB is a *source*
 they consult — often the first one — not a gate: a run with no KB change can
 still find a proposal from the repo itself, its own integration map, or the
