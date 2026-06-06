@@ -5,6 +5,19 @@ in the decentralized-pull knowledge-application system: it (a) improves its own
 agent-meta from the shared knowledge base and (b) participates in the cross-repo
 `skill-request` (demand) and `skill-promotion` (supply) channels.
 
+**One loop, two concerns, two owners — you onboard it once.** Concern (a) is
+`agent-research`'s domain: the knowledge it synthesizes and mirrors. Concern (b)
+is this repo's domain: it owns the `skill-request` / `skill-promotion` labels and
+their contracts (`docs/design/skill-request-flow.md`,
+`docs/design/skill-promotion-flow.md`). They are **not** two separate loops — the
+demand/supply channels are emitted *by* the single `apply-agent-research` run, off
+the same KB read, so there is exactly one thing to set up. This doc lives here, in
+the **public** skills repo, on purpose: a Consumer clones a credential-free read
+surface (the knowledge mirror) and frequently has no access to the private
+`agent-research`, so its onboarding must be readable without that access. Ownership
+of concern (a) is expressed **by reference** to `agent-research`, not by relocating
+this procedure behind its wall.
+
 `apply-agent-research` is the **rich** member of the
 [proposal-loop family](./proposal-loop-harness.md) — **read that harness doc
 first**; this doc adds only what is Consumer-specific. Hand this file (plus the
