@@ -9,6 +9,8 @@ roadmap's column layout (run the file directly — the `.test.py` name is not a
 
 Stdlib only (ADR 0004). The hook's filename has hyphens, so it is loaded by
 path rather than imported by name."""
+import sys
+sys.dont_write_bytecode = True  # don't litter __pycache__ in consumer tree
 import importlib.util
 import os
 import unittest
